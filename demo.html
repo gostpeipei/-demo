@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		body{
+			text-align: center;
+		}
+		table{
+			width: 50%;
+			border-collapse: collapse;
+			margin: 100px auto;
+		}
+		th:hover{
+			cursor: pointer;
+			background-color: #ddd;
+		}
+		th:active{
+			background-color: skyblue;
+		}
+		th,td{
+			border: 1px solid #000;
+		}
+	</style>
+</head>
+<body>
+	<table>
+		<thead>
+			<tr>
+				<th>点击排序第一列</th>
+				<th>点击排序第二列</th>
+				<th>点击排序第三列</th>
+			</tr>
+		</thead>
+		<tbody id="content">
+			<tr>
+				<td>aaa</td>
+				<td>ddd</td>
+				<td>111</td>
+			</tr>
+			<tr>
+				<td>ccc</td>
+				<td>eee</td>
+				<td>333</td>
+			</tr>
+			<tr>
+				<td>bbb</td>
+				<td>fff</td>
+				<td>222</td>
+			</tr>
+		</tbody>	
+	</table>
+
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+	<script src="template.js"></script>
+	<script id="test" type="text/html">
+		{{each list as value i}}
+		<tr>
+			<td>{{value.col0}}</td>
+			<td>{{value.col1}}</td>
+			<td>{{value.col2}}</td>
+		</tr>
+		{{/each}}
+	</script>
+
+	<script>
+		var data = {
+			title: '基本例子',
+			isAdmin: true,
+			list: [{
+				col0: 'aaa',
+				col1: 'zzz',
+				col2: '111'
+			},{
+				col0: 'ccc',
+				col1: 'fff',
+				col2: '333'
+			},{
+				col0: 'bbb',
+				col1: 'nnasd',
+				col2: '235'
+			},{
+				col0: 'aaa',
+				col1: 'qqq',
+				col2: '999'
+			},{
+				col0: 'bbb',
+				col1: 'ddd',
+				col2: '000'
+			}]
+		};
+
+		// 先在对象中建立flag,默认为1，对应每一列正序
+		data.flag0 = 1;
+		data.flag1 = 1;
+		data.flag2 = 1;
+		console.log(data)
+		var html = template('test', data);
+		document.getElementById('content').innerHTML = html;
+
+		$('thead tr th').on('click', function(e) {
+			// 获取点击的是第几列的索引
+			var index = $(e.target).index();
+
+			// 判断正还是倒
+			var flag = 'flag' + index;
+			var col = 'col' + index;
+			//将对应列的数据保存下来
+			var colArr = [];
+			data.list.forEach(function(item){
+				colArr.push(item[col]);
+			})
+			colArr.sort();
+			if(data[flag]){
+				//正序
+				console.log('正序')
+				data.list.forEach(function(item, i){
+					item[col] = colArr[i]
+				})
+				data[flag] = 0;
+			}else {
+				//倒序
+				console.log('倒序')
+				colArr.reverse();
+				data.list.forEach(function(item, i){
+					item[col] = colArr[i]
+				})
+				data[flag] = 1;
+			}
+
+			// 重新显示排序后的数据
+			html = template('test', data);
+			document.getElementById('content').innerHTML = html;
+		})
+	</script>
+</body>
+</html>
